@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getUserProfile } from '../../store/user-profile/userProfileThunk';
-import Header from './../Header';
+import Header from '../components/Header';
+import { getUserProfile } from '../store/user-profile/userProfileThunk';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const Profile = () => {
   console.log(state);
   useEffect(() => {
     dispatch(getUserProfile());
-  }, []);
+  }, [dispatch]);
 
   return <Header />;
 };

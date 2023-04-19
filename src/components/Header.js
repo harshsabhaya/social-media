@@ -87,7 +87,7 @@ function Header() {
   const handleLogout = () => {};
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="sticky" id="navbar">
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />

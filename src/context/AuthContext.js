@@ -42,6 +42,7 @@ const AuthWrapper = ({ children }) => {
     token: token ?? '',
     setAuth: handleAuth,
   };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

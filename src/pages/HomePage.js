@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -6,20 +6,17 @@ import Grid from '@mui/material/Grid';
 // import Paper from '@mui/material/Paper';
 import { useSearchParams } from 'react-router-dom';
 
+import FeedCard from '../components/feedcard/FeedCard';
+import Header from '../components/Header';
+import Loader from '../components/Loader';
 import { useGetUserPostQuery } from '../store/user-posts/userPosts';
-import FeedCard from './feedcard/FeedCard';
-import Header from './Header';
-import Loader from './Loader';
 
 const HomePage = () => {
-  const scrollRef = useRef();
   const [searchParams, setSearchParams] = useSearchParams({ page: 1 });
   const pageNumber = Number(searchParams.get('page'))
     ? Number(searchParams.get('page'))
     : 1;
   const { data, isFetching } = useGetUserPostQuery(pageNumber);
-  // const [posts, setPosts] = useState([]);
-  // console.log('number', searchParams.toString(), pageNumber);
 
   useEffect(() => {
     if (searchParams.get('page') === '1') {
@@ -27,19 +24,6 @@ const HomePage = () => {
       setSearchParams(searchParams);
     }
   }, [searchParams, setSearchParams]);
-
-  // useEffect(() => {
-  //   const newPosts = data?.data?.length > 0 ? data.data : [];
-  //   setPosts((prev) => [...prev, ...newPosts]);
-  // }, [data?.data]);
-
-  // const handleScroll = () => {
-  //   const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-  //   if (scrollTop + clientHeight + 1 === scrollHeight) {
-  //     // setPage((prev) => prev + 1);
-  //     setSearchParams({ page: pageNumber + 1 });
-  //   }
-  // };
 
   const handlePagination = (value) => {
     let count;
@@ -54,11 +38,7 @@ const HomePage = () => {
   return (
     <>
       <Header />
-      <div
-        // onScroll={handleScroll}
-        ref={scrollRef}
-        style={{ height: '100vh', overflowX: 'hidden' }}
-      >
+      <div style={{ height: '100vh', overflowX: 'hidden' }}>
         <Grid
           container
           sx={{ display: 'flex', justifyContent: 'center', pt: '90px' }}

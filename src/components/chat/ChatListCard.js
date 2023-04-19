@@ -8,17 +8,16 @@ import ListItemText from '@mui/material/ListItemText';
 import { PropTypes } from 'prop-types';
 
 export default function ChatListCard({ user, isLast, onClick, isActive }) {
-  const { conversationId, chatUser } = user;
-  console.log(conversationId);
+  const { chatUser } = user;
   return (
     <>
       <ListItemButton selected={isActive} onClick={() => onClick(user)}>
         <ListItemAvatar>
-          <Avatar alt={chatUser.firstname} src="2.jpg" />
+          <Avatar alt={chatUser?.firstname} src="2.jpg" />
         </ListItemAvatar>
         <ListItemText
-          primary={`${chatUser.firstname} ${chatUser.lastname}`}
-          secondary={chatUser.email}
+          primary={`${chatUser?.firstname} ${chatUser?.lastname}`}
+          secondary={chatUser?.email}
         />
       </ListItemButton>
       {!isLast && <Divider variant="fulwidth" component="" />}
