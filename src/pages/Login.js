@@ -78,7 +78,7 @@ const Login = () => {
   ]);
 
   return (
-    <>
+    <div style={{ textAlign: 'center' }}>
       <h1>Login</h1>
       <div className="form-wrapper">
         <Box
@@ -117,7 +117,7 @@ const Login = () => {
         snackData={snackData}
         handleSnackBar={handleSnackBar}
       />
-    </>
+    </div>
   );
 };
 

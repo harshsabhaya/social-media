@@ -8,31 +8,26 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { PropTypes } from 'prop-types';
 
+import { FEED_IMAGE } from '../../utils/config';
+
 export default function FeedCard({
   post: { title, description, created_at, updated_at },
 }) {
   return (
-    <Card sx={{ minWidth: 300, maxWidth: 345 }}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
-      />
-      <CardContent>
+    <Card sx={{ width: 345 }}>
+      <CardMedia sx={{ height: 230 }} image={FEED_IMAGE} title="green iguana" />
+      <CardContent sx={{ backgroundColor: '#d3d3d347' }}>
         <Typography gutterBottom variant="h5" component="div">
           {title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {description}
-          {/* Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica */}
         </Typography>
       </CardContent>
       <CardActions>
         <Typography variant="body2" color="text.secondary">
-          {created_at}
+          {new Date(created_at).toDateString()}
         </Typography>
-        {/* <Button size="small">Learn More</Button> */}
       </CardActions>
     </Card>
   );

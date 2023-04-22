@@ -27,6 +27,8 @@
 	height: 60vh;
 	overflow-y: auto;
 	padding: 15px;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 .chat-history::-webkit-scrollbar {

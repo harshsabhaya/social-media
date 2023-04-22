@@ -3,12 +3,12 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import jwt_decode from 'jwt-decode';
 import { PropTypes } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
-import { TOKEN } from '../lib/config';
-import em, { UNAUTHORIZED_USER } from '../lib/eventEmitter';
 import { getUserProfile } from '../store/user-profile/userProfileThunk';
+import { TOKEN } from '../utils/config';
 import { getCookie, removeCookie, setCookie } from '../utils/cookiesManagement';
+import em, { UNAUTHORIZED_USER } from '../utils/eventEmitter';
 
 const AuthContext = createContext();
 
@@ -54,13 +54,14 @@ export default AuthWrapper;
 
 export const AuthRedirect = ({ children, isAuth = true }) => {
   const { isAuth: isLogin } = useAuth();
+  const location = useLocation();
 
   if (isLogin && !isAuth) {
     // redirect to homepage;
     return <Navigate to="/" />;
   } else if (!isLogin && isAuth) {
     // redirect to login
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} />;
   }
 
   return children;

@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { TOKEN, baseUrl } from '../lib/config';
-import em, { UNAUTHORIZED_USER } from '../lib/eventEmitter';
+import { TOKEN, baseUrl } from '../utils/config';
 import { getCookie } from '../utils/cookiesManagement';
+import em, { UNAUTHORIZED_USER } from '../utils/eventEmitter';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: baseUrl,
@@ -22,7 +22,7 @@ const customFetchBasedQuery = async (args, api, extraOptions) => {
   return result;
 };
 
-export const rtkApi = createApi({
+const rtkApi = createApi({
   reducerPath: 'rtkQuery',
   baseQuery: customFetchBasedQuery,
   endpoints: () => ({}),

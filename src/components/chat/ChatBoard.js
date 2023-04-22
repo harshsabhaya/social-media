@@ -7,11 +7,9 @@ import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
-import { PropTypes } from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useOutletContext } from 'react-router-dom';
 
-import { useGetConversationMutation } from '../../store/chat/chatQuerys';
-import { addNewMessage, getChatHistory } from '../../store/chat/chatSlice';
+import { useLazyGetConversationMergeQuery } from '../../store/chat/chatQuerys';
 import { socket } from '../../utils/socket';
 import Loader from '../Loader';
 import style from './Chat.module.css';
@@ -26,83 +24,52 @@ const inputSx = {
   'height': '44px',
   'boxShadow': 'rgba(0, 0, 0, 0.1) 1px -10px 50px',
 };
-const ChatBoard = ({ activeUser }) => {
-  const { conversationId, chatUser } = activeUser;
-  const currentUserRef = useRef({});
+const ChatBoard = () => {
+  const { conversationId, chatUser } = useOutletContext();
+
+  const paginationRef = useRef({});
   const scrollRef = useRef();
-  const lastScrollPosition = useRef();
   const [message, setMessage] = useState('');
-  const chatHistory = useSelector((state) =>
-    getChatHistory(state, conversationId)
-  );
-  const dispatch = useDispatch();
 
-  const [getConversationData, { isLoading }] = useGetConversationMutation();
+  const [getNewData, { data: chatData, isFetching, originalArgs }] =
+    useLazyGetConversationMergeQuery();
 
   useEffect(() => {
-    socket.on('getMessage', getNewSocketMsg);
-    return () => {
-      socket.off('getMessage', getNewSocketMsg);
-    };
-  }, []);
-
-  useEffect(() => {
-    // if chat is not loaded then getInitial data
-    if (!currentUserRef?.current?.[conversationId]) {
-      currentUserRef.current[conversationId] = {
-        currentPage: 1,
-        totalPage: 1,
-      };
-      currentUserRef.current[conversationId] = 1;
-      const payload = {
-        conversationId,
-        pgNumber: currentUserRef.current[conversationId],
-      };
-      getConversationData(payload);
-    }
-  }, [conversationId]);
+    getNewData({
+      conversationId,
+      pgNumber: 1,
+    });
+    paginationRef.current[conversationId] = 1;
+  }, [getNewData, conversationId]);
 
   const handleScroll = () => {
     if (
-      isLoading ||
-      chatHistory?.totalPage === currentUserRef.current[conversationId]
+      isFetching ||
+      chatData?.data?.totalPage === paginationRef.current[conversationId]
     )
       return;
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    lastScrollPosition.current = scrollTop;
 
-    console.log('height', scrollTop, scrollHeight, clientHeight);
-    const endOfPage = Math.abs(scrollTop) + clientHeight + 2 >= scrollHeight;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const endOfPage = Math.abs(scrollTop) + clientHeight >= scrollHeight;
     if (endOfPage) {
-      console.log('Call api');
-      currentUserRef.current[conversationId] += 1;
-      const payload = {
+      paginationRef.current[conversationId] += 1;
+      getNewData({
         conversationId,
-        pgNumber: currentUserRef.current[conversationId],
-      };
-      getConversationData(payload);
+        pgNumber: paginationRef.current[conversationId],
+      });
     }
   };
 
-  const getNewSocketMsg = (msg) => {
-    console.log('msgmsg', msg);
-    const payLoad = {
-      conversationId: msg?.data?.conversationId,
-      content: msg?.data,
-    };
-    dispatch(addNewMessage(payLoad));
-  };
-
   const sendMessage = () => {
-    const obj = {
-      receiverId: activeUser?.chatUser?._id,
-      content: message,
-    };
+    if (message.trim() === '') return;
     scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    socket.emit('sendMessage', obj);
+    socket.emit('sendMessage', {
+      receiverId: chatUser?._id,
+      content: message,
+    });
     setMessage('');
   };
-
+  console.log('message', message.trim());
   return (
     <>
       <Container
@@ -110,12 +77,19 @@ const ChatBoard = ({ activeUser }) => {
         sx={{ borderBottom: '1px solid #d3d3d3', flex: '0 1 auto' }}
       >
         <Toolbar disableGutters>
-          <IconButton onClick={() => {}} sx={{ p: 0 }}>
+          <IconButton
+            sx={{
+              'p': 0,
+              'cursor': 'auto',
+              '&:hover': { backgroundColor: 'transparent' },
+            }}
+          >
             <Avatar
               alt={chatUser?.firstname}
               src="/static/images/avatar/2.jpg"
+              sx={{ marginRight: '10px' }}
             />
-            &nbsp;&nbsp;{chatUser?.firstname}
+            {chatUser?.firstname}
           </IconButton>
         </Toolbar>
       </Container>
@@ -126,15 +100,17 @@ const ChatBoard = ({ activeUser }) => {
         ref={scrollRef}
         onScroll={handleScroll}
       >
-        {isLoading ? (
+        {isFetching ? (
           <Loader
             sx={{ position: 'absolute', top: '75px', alignSelf: 'center' }}
           />
         ) : null}
-        {chatHistory?.data?.length > 0 ? (
-          <ChatHistory chatData={chatHistory?.data} />
+
+        {chatData?.conversationId === originalArgs?.conversationId &&
+        chatData?.data?.data?.length > 0 ? (
+          <ChatHistory chatData={chatData?.data?.data} />
         ) : (
-          !isLoading && 'No Data Found'
+          !isFetching && 'No Data Found'
         )}
       </div>
 
@@ -142,7 +118,7 @@ const ChatBoard = ({ activeUser }) => {
         <OutlinedInput
           sx={inputSx}
           value={message}
-          placeholder="Type message"
+          placeholder="Write a message here"
           onChange={(event) => setMessage(event.target.value)}
           onKeyDown={(e) => (e.key === 'Enter' ? sendMessage() : null)}
         />
@@ -150,7 +126,7 @@ const ChatBoard = ({ activeUser }) => {
           sx={{ borderRadius: '30px', width: '5vw' }}
           variant="contained"
           onClick={sendMessage}
-          disabled={message === ''}
+          disabled={message.trim() === ''}
         >
           Send
         </Button>
@@ -161,7 +137,3 @@ const ChatBoard = ({ activeUser }) => {
 };
 
 export default ChatBoard;
-
-ChatBoard.propTypes = {
-  activeUser: PropTypes.object,
-};

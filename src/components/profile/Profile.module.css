@@ -1,0 +1,16 @@
+.account-top-div {
+    background: linear-gradient(90deg, rgba(32,201,201,1) 0%, rgba(58,199,133,1) 100%, rgba(0,36,27,1) 100%);
+    border-radius: 10px 10px 0 0;
+    height: 180px;
+    position: relative;
+}
+
+.profile-img {
+    height: 190px;
+    width: auto ;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    transform: translate(25%, 35%);
+    border: 5px solid #fff;
+}

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
+import ChatIcon from '@mui/icons-material/Chat';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
-import ChatBoard from '../components/chat/ChatBoard';
 import ChatListCard from '../components/chat/ChatListCard';
-import Header from '../components/Header';
 import Loader from '../components/Loader';
 import { useConversationListQuery } from '../store/chat/chatQuerys';
 import { socket } from '../utils/socket';
@@ -46,27 +45,21 @@ const Chat = () => {
     const data =
       conversationList?.data?.length > 0
         ? conversationList?.data.find((user) => user.conversationId === cid)
-        : [];
+        : {};
     setActiveUser(data);
   }, [conversationList, cid]);
 
   useEffect(() => {
     socket.on('connect', () => {
-      console.log('socket.connected', socket.connected); // true
+      console.log('socket.connected', socket.connected);
     });
-    return () => {
-      socket.on('disconnect', () => {
-        console.log('disconnect', socket.connected); // false
-      });
-    };
   }, []);
 
   return (
     <>
-      <Header />
       <Container maxWidth="xl" sx={CONTAINERCSS}>
         <Grid container spacing={2} pb={2} sx={{ height: 'inherit' }}>
-          <Grid item xl={3} xs={6} md={4}>
+          <Grid item xl={3} xs={5} md={4}>
             <Item>
               {isFetching ? (
                 <Loader sx={{ margin: 'auto' }} />
@@ -97,12 +90,17 @@ const Chat = () => {
               )}
             </Item>
           </Grid>
-          <Grid item xl={9} xs={6} md={8}>
+          <Grid item xl={9} xs={7} md={8}>
             <Item>
-              {activeUser?.conversationId ? (
-                <ChatBoard activeUser={activeUser} />
+              {isFetching && cid ? (
+                <Loader sx={{ margin: 'auto' }} />
+              ) : activeUser?.conversationId ? (
+                <Outlet context={activeUser} /> //CharBoard is Outlet here
               ) : (
-                <div style={{ margin: 'auto' }}>No chat found</div>
+                <div style={{ margin: 'auto', textAlign: 'center' }}>
+                  <ChatIcon sx={{ fontSize: '3.5rem' }} />
+                  <p>No chat found</p>
+                </div>
               )}
             </Item>
           </Grid>

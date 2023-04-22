@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { TOKEN, baseUrl } from '../../utils/config';
 import { getCookie } from '../../utils/cookiesManagement';
-import { TOKEN, baseUrl } from './../../lib/config';
 
 export const getUserProfile = createAsyncThunk(
   'user/getProfile',
@@ -35,6 +35,9 @@ const userSlice = createSlice({
   },
 });
 
+export const getProfile = (state) => {
+  return state?.profile?.userProfile;
+};
 // export const {} = userSlice.
 
 export default userSlice.reducer;
