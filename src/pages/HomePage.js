@@ -7,7 +7,8 @@ import Grid from '@mui/material/Grid';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import FeedCard from '../components/feedcard/FeedCard';
+import FeedCard from '../components/homepage/FeedCard';
+import NewPost from '../components/homepage/NewPost';
 import Loader from '../components/Loader';
 import { useGetUserPostQuery } from '../store/user-posts/userPosts';
 
@@ -86,6 +87,7 @@ const HomePage = () => {
           )}
         </Box>
       </Grid>
+      <NewPost />
     </>
   );
 };

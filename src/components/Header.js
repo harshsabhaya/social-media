@@ -28,14 +28,6 @@ const loginSettings = [
     name: 'Profile',
   },
   {
-    path: 'account',
-    name: 'Account',
-  },
-  {
-    path: 'dashboard',
-    name: 'Dashboard',
-  },
-  {
     path: 'logout',
     name: 'Logout',
   },
@@ -203,7 +195,7 @@ function Header() {
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: '45px' }}
+                sx={{ mt: '45px', padding: '10px' }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{
@@ -218,8 +210,16 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
+                {auth.isAuth && (
+                  <MenuItem sx={{ justifyContent: 'center' }}>
+                    <Typography textAlign="center">
+                      {userProfile?.firstname} {userProfile?.lastname}
+                    </Typography>
+                  </MenuItem>
+                )}
                 {menuList.map((setting) => (
                   <MenuItem
+                    sx={{ justifyContent: 'center' }}
                     key={setting.path}
                     onClick={() => handleRedirect(setting)}
                   >

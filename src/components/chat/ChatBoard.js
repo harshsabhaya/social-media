@@ -106,6 +106,7 @@ const ChatBoard = () => {
           />
         ) : null}
 
+        {/* it will check requested data and current cache data  */}
         {chatData?.conversationId === originalArgs?.conversationId &&
         chatData?.data?.data?.length > 0 ? (
           <ChatHistory chatData={chatData?.data?.data} />
