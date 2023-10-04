@@ -3,8 +3,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import jwt_decode from 'jwt-decode';
 import { PropTypes } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, matchRoutes, useLocation } from 'react-router-dom';
 
+import Header from '../components/Header';
+import Login from '../pages/Login';
 import { getUserProfile } from '../store/user-profile/userProfileThunk';
 import { TOKEN } from '../utils/config';
 import { getCookie, removeCookie, setCookie } from '../utils/cookiesManagement';
@@ -52,22 +54,25 @@ AuthWrapper.propTypes = {
 
 export default AuthWrapper;
 
-export const AuthRedirect = ({ children, isAuth = true }) => {
+const nonAuthPages = ['/login', '/signup'];
+
+export const AuthRedirect = () => {
   const { isAuth: isLogin } = useAuth();
   const location = useLocation();
 
-  if (isLogin && !isAuth) {
+  const authenticatedRouter = !matchRoutes(
+    nonAuthPages.map((path) => ({
+      path,
+    })),
+    location.pathname
+  );
+  if (isLogin && !authenticatedRouter) {
     // redirect to homepage;
     return <Navigate to="/" />;
-  } else if (!isLogin && isAuth) {
+  } else if (!isLogin && authenticatedRouter) {
     // redirect to login
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  return children;
-};
-
-AuthRedirect.propTypes = {
-  children: PropTypes.node,
-  isAuth: PropTypes.bool,
+  return authenticatedRouter && isLogin ? <Header /> : <Login />;
 };
